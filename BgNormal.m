@@ -4,7 +4,7 @@ function contrastAdjusted = BgNormal(img)
 %max(img)
 %min(img)
 %function 
-se = offsetstrel('ball',10,10);
+se = offsetstrel('ball',50,50);
 %img = imadjust(img);
 img = padarray(img,[8,8],'symmetric');
 img = wiener2(img,[9,9]);
@@ -19,8 +19,8 @@ tophatFiltered = imtophat(img,se);
 %%imshow(tophatFiltered);
 
 contrastAdjusted = imadjust(tophatFiltered);
-%figure(3)
-%imshow(contrastAdjusted);
+figure(3)
+imshow(contrastAdjusted);
 %max(contrastAdjusted)
 %min(contrastAdjusted)
 %imwrite(contrastAdjusted,'worm1_contrastAdjusted.tif')

@@ -1,8 +1,10 @@
-#/bin/python3
-'''
-Script to represent worm track and statistics
-'''
+#!/bin/python3
+'''Script to represent worm track and statistics
+|Version | Author | Commit
+|0.1     | ZhouXY | first runable version
+|
 
+'''
 
 import os,sys
 import re
@@ -10,7 +12,8 @@ import numpy as np
 import linecache
 import matplotlib.pyplot as plt
 import matplotlib.animation as antt
-#infer the haplotypes of SNPs
+
+
 def read_go(file_name):
     file = linecache.getlines(file_name)
     locations = ''.join(file)
@@ -45,10 +48,12 @@ def PointPlot(location):
     ax.set_ylim([0,3500])
     print("Frame",len(x))
     for i in range(len(x)):
+        x[i]=[float(i) for i in x[i]]
+        y[i]=[float(i) for i in y[i]]
         #print(x[0])
         ax.plot(x[i],y[i],'ro',MarkerSize = 0.1)
         ax.set_title("Frame_"+str(i))
-        plt.pause(0.02)
+        plt.pause(0.2)
 
 def PointSubPlot(location):
     x = location[0]
@@ -69,6 +74,8 @@ def PointSubPlot(location):
     ax3.set_ylim([0,3500])
     print("Frame",len(x))
     for i in range(len(x)):
+        x[i]=[float(i) for i in x[i]]
+        y[i]=[float(i) for i in y[i]]
         #print(x[0])
         ax.plot(x[i],y[i],'ro',MarkerSize = 0.1)
         ax1.plot(x[i][0],y[i][0],'ro',MarkerSize = 2)
@@ -113,9 +120,6 @@ def LocationDenminationChange(Points):#for plot multpoints
     points = []#contains all points' locations of one frame in one dimension
     for i in Points:
         points.append(Points[i])
-    #print(len(points))
-    #print(len(points[0][0]))
-    #print(points[0])
     x = []
     y = []
     for i in range(len(points[0][0])):
@@ -131,22 +135,25 @@ def animate(i):
     anim = animation.FuncAnimation
 
 if __name__ == "__main__":
-    locations = read_go("Locations.txt")
+    #locations = read_go("/home/hf/iGEM/Results/20180824/240818_125035_130_after1hr/location_0824")
+    locations = read_go("/home/hf/iGEM/Results/20180819/190818_203550_130_Alcohol_Starting/location_0819")
     locations = changeformat(locations)
     #print(locations[0:102])
     #file = open("locations_py.txt",'a')
     #file.writelines(locations)
-    #Pointdynamics = getindivilocations(locations)
-    print("points",len(Pointdynamics))
-    ValidPoints = ExtractValidPoint(Pointdynamics)
+    Pointdynamics = getindivilocations(locations)
+    PointPlot(LocationDenminationChange(Pointdynamics))
+
+    #print("points",len(Pointdynamics))
+    #ValidPoints = ExtractValidPoint(Pointdynamics)
     #print("valid",len(ValidPoints))
-    point1 = Pointdynamics['Point 64']
+    #point1 = Pointdynamics['Point 64']
     #print(point1)
 
 
-    ContinuesPoints = ExtractContinuesPoint(ValidPoints)
+    #ContinuesPoints = ExtractContinuesPoint(ValidPoints)
     #print("Continues",len(ContinuesPoints))
     #PointPlot(LocationDenminationChange(ValidPoints))
-    PointPlot(LocationDenminationChange(ContinuesPoints))
+    #PointPlot(LocationDenminationChange(ContinuesPoints))
     #PointPlot(point1)
     #PointSubPlot(LocationDenminationChange(ValidPoints))

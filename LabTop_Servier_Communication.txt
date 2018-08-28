@@ -1,2 +1,0 @@
-Error using print (line 82)
-PNG library failed: Write Error.

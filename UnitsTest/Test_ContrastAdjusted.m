@@ -2,9 +2,10 @@ clear all;
 img1 = imread('C.elegans_203550_0033.tif');
 contrastAdjusted1 = BgNormal(img1);
 imwrite(contrastAdjusted1, 'C.elegans_203550_0033_clip_winner_3_3rolling_adjusted.tif');
-figure(2);
-imshow(contrastAdjusted1);    
+%figure(2);
+%imshow(contrastAdjusted1);    
 BgThresh(contrastAdjusted1,'C.elegans_203550_0033_clip_winner_3_3rolling_adjusted_thresh.tif');
+
 
 
 

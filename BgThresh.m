@@ -1,25 +1,24 @@
-function [imgx,imgy] = BgThresh(img,imgename)
-% 
+function [imgx, imgy,img_thresh, img_removed] = BgThresh(img_soure, thresh, small, big)
+% Extract worm location from normalized image
 % | Version | Author | Date     | Commit
 % | 0.1     | ZhouXY | 18.07.19 | The init version
-
+% | 0.2     | H.F.   | 18.09.05 |
+% To Do: Binarize image with locally adaptive thresholding or only take
+% threshold but keep graydrade
+%
 
 % Choose the threshold of image
-imgbwthresh = imbinarize(img,0.31);%previous use 0.2
-imwrite(imgbwthresh, ['thresh/' imgename '.png']);
+img_thresh = imbinarize(img_soure,thresh);%previous use 0.2
 
 % Choose the reasonable area to find out worm
-imgremovesmall = bwareaopen(imgbwthresh,70);   %remove regions <100 pixels
-imgremoved = RemoveBigArea(imgremovesmall,600);%remove regions >600 pixels
-%imwrite(imgremoved, imgename);
-imwrite(imgremoved, ['ImgeProcessing/' imgename '.png']);
-
+imgremovesmall = bwareaopen(img_thresh,small);   %remove regions <100 pixels
+img_removed = RemoveBigArea(imgremovesmall,big);%remove regions >600 pixels
 
 % Find connected components in binary image
-CC = bwconncomp(imgremoved,26); %default is 8,18, 26 neighborhood also OK
+CC = bwconncomp(img_removed,26); %default is 8,18, 26 neighborhood also OK
 
 % Due to cellfun limit, size of img must be a cell form
-s = size(imgremoved);
+s = size(img_removed);
 SizeCell = cell(1,numel(CC.PixelIdxList));
 SizeCell(1:end) = {s};
 

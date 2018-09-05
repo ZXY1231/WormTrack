@@ -3,7 +3,6 @@
 |Version | Author | Commit
 |0.1     | ZhouXY | first runable version
 |
-
 '''
 
 import os,sys
@@ -135,8 +134,7 @@ def animate(i):
     anim = animation.FuncAnimation
 
 if __name__ == "__main__":
-    #locations = read_go("/home/hf/iGEM/Results/20180824/240818_125035_130_after1hr/location_0824")
-    locations = read_go("/home/hf/iGEM/Results/20180819/190818_203550_130_Alcohol_Starting/location_0819")
+    locations = read_go("/home/hf/iGEM/Results/20180904/result.txt")
     locations = changeformat(locations)
     #print(locations[0:102])
     #file = open("locations_py.txt",'a')

@@ -3,31 +3,39 @@
 % | Version | Author | Date     | Commit
 % | 0.1     | ZhouXY | 18.07.19 | The init version
 % | 0.2     | H.F.   | 18.08.28 | 
-% TODO:
+% TODO: put the parameters outside function but main function
 
 clear all;
 warning('off','all'); % Close all warning
 
 tic;
-% Parameter
-%path = '/home/hf/iGEM/DataII/20180824/C.elegans/240818_115847_130_During1hr/';
-path = '/home/hf/iGEM/DataI/20180819/C.elegans/190818_203550_130_Alcohol_Starting/';
-%path = '\\10.20.13.222\igem\Results\20180709\130Worm-First30min\';
+% Parameters
+soure_path = '/home/hf/iGEM/Results/20180904/DifussionTest7min/';
+result_path ='/home/hf/iGEM/Results/20180904/';
+thresh = 0.991;
+small = 50;
+big = 600;
 
-imges = dir([path '*.tif']);
+imges = dir([soure_path '*.tif']);
 imge_num = length(imges);
 CentroidsLocates = cell(imge_num,1);
 %leng = imge_num;
-leng = 20; % debug
+leng = 16 ; %debug
 
 % Handling background and worms localization
 parfor i =1:leng
- %parfor i =40:leng % debug
     img = imread([imges(i).folder '/' imges(i).name]);
-    img = img(60:3450, 141:3531);
+    img = img(516:1978, 588:1982); 
+    
     contrastAdjusted = BgNormal(img);
-    imwrite(img, ['Normalize/' imges(i).name '.png']);
-    [imgx,imgy] = BgThresh(contrastAdjusted,imges(i).name);
+    imwrite(img, [result_path '/Normalize/' imges(i).name '.png']);
+    
+
+    [imgx, imgy, imgbwthresh, imgremoved] = BgThresh(contrastAdjusted,thresh,small,big);
+    
+    imwrite(imgbwthresh, [result_path 'Thresh/' imges(i).name '.png']);
+    imwrite(imgremoved, [result_path 'Remove/' imges(i).name '.png']);
+
     CentroidsLocates{i,1} = cat(1,imgx,imgy);
     %printf('Remain %d', leng-i);
 end
@@ -58,7 +66,7 @@ for i = 2:leng
 end
 
 % Write each worm's localtion to file
-flocates = fopen('/home/hf/iGEM/Results/20180819/190818_203550_130_Alcohol_Starting/location_0819','w');
+flocates = fopen([result_path 'DiffussionTest7min.localtion'],'w');
 for i = 1:length(PointsDynamics)
     fprintf(flocates, 'Point %d', i);
     fprintf(flocates, '\r\nx\r\n');

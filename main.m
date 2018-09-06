@@ -19,8 +19,8 @@ big = 600;
 imges = dir([soure_path '*.tif']);
 imge_num = length(imges);
 CentroidsLocates = cell(imge_num,1);
-%leng = imge_num;
-leng = 16 ; %debug
+leng = imge_num;
+%leng = 16 ; %debug
 
 % Handling background and worms localization
 parfor i =1:leng

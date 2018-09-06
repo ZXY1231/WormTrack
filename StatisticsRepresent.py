@@ -12,7 +12,6 @@ import linecache
 import matplotlib.pyplot as plt
 import matplotlib.animation as antt
 
-
 def read_go(file_name):
     file = linecache.getlines(file_name)
     locations = ''.join(file)
@@ -24,13 +23,12 @@ def changeformat(locations):
 
 def getindivilocations(locations):
     #print(locations[0:10000])
-    #print(len(re.findall(r"Point \d+.*\n",locations)))
     locations = re.findall(r"Point \d+[xy\d\t\n.]*",locations)
     indilocations = []
     #print(len(locations))
     for i in locations:
         indilocations.append(i)
-    #print(indilocations[0])
+    print(indilocations[1])
     Pointdynamics = {}
     for i in indilocations:
         point = i.split("\n")
@@ -40,23 +38,20 @@ def getindivilocations(locations):
 
 def PointPlot(location):
     x = location[0]
-    #print(location[0])
     y = location[1]
     fig,ax = plt.subplots()
-    ax.set_xlim([0,3500])
-    ax.set_ylim([0,3500])
+    ax.set_xlim([0,2000])
+    ax.set_ylim([0,2000])
     print("Frame",len(x))
     for i in range(len(x)):
         x[i]=[float(i) for i in x[i]]
         y[i]=[float(i) for i in y[i]]
-        #print(x[0])
-        ax.plot(x[i],y[i],'ro',MarkerSize = 0.1)
+        ax.plot(x[i],y[i],'ro',MarkerSize = 1)
         ax.set_title("Frame_"+str(i))
         plt.pause(0.2)
 
 def PointSubPlot(location):
     x = location[0]
-    #print(location[0])
     y = location[1]
     flg = plt.figure()
     ax = flg.add_subplot(2,2,4)
@@ -81,7 +76,7 @@ def PointSubPlot(location):
         ax2.plot(x[i][101],y[i][101],'ro',MarkerSize = 2)
         ax3.plot(x[i][200],y[i][200],'ro',MarkerSize = 2)
         ax.set_title("Frame_"+str(i))
-        plt.pause(0.02)
+        plt.pause(5)
 
 def ExtractValidPoint(Pointdynamics):
     dis = 0
@@ -115,8 +110,8 @@ def ExtractContinuesPoint(ValidPoints,gap = 5):
             ContinuesPoints[i] = ValidPoints[i]
     return ContinuesPoints
 
-def LocationDenminationChange(Points):#for plot multpoints
-    points = []#contains all points' locations of one frame in one dimension
+def LocationDenminationChange(Points): # for plot multpoints
+    points = [] # contains all points' locations of one frame in one dimension
     for i in Points:
         points.append(Points[i])
     x = []
@@ -129,29 +124,24 @@ def LocationDenminationChange(Points):#for plot multpoints
             y[i].append(points[j][1][i])
     return [x,y]
 
-def animate(i):
-    return
-    anim = animation.FuncAnimation
-
 if __name__ == "__main__":
     locations = read_go("/home/hf/iGEM/Results/20180904/result.txt")
     locations = changeformat(locations)
-    #print(locations[0:102])
+    #print(locations[:])
     #file = open("locations_py.txt",'a')
     #file.writelines(locations)
     Pointdynamics = getindivilocations(locations)
     PointPlot(LocationDenminationChange(Pointdynamics))
 
     #print("points",len(Pointdynamics))
-    #ValidPoints = ExtractValidPoint(Pointdynamics)
-    #print("valid",len(ValidPoints))
+    ValidPoints = ExtractValidPoint(Pointdynamics)
+    print("valid",len(ValidPoints))
     #point1 = Pointdynamics['Point 64']
     #print(point1)
 
-
-    #ContinuesPoints = ExtractContinuesPoint(ValidPoints)
-    #print("Continues",len(ContinuesPoints))
-    #PointPlot(LocationDenminationChange(ValidPoints))
-    #PointPlot(LocationDenminationChange(ContinuesPoints))
+    ContinuesPoints = ExtractContinuesPoint(ValidPoints)
+    print("Continues",len(ContinuesPoints))
+    PointPlot(LocationDenminationChange(ValidPoints))
+    PointPlot(LocationDenminationChange(ContinuesPoints))
     #PointPlot(point1)
     #PointSubPlot(LocationDenminationChange(ValidPoints))

@@ -25,6 +25,3 @@ for i = linspace(1, Preleng, Preleng) % load worm in next frame
     NearestX(i) = NeX;
     NearestY(i) = NeY;
 end
-
-NearestX;
-NearestY;

@@ -24,8 +24,8 @@ SizeCell(1:end) = {s};
 
 % Find out the centre of worm
 centroids = cellfun(@LocateWormCentre, CC.PixelIdxList, SizeCell);
-[x,y] = ind2sub(s, centroids); % Transfer linear index to subscript
+[x, y] = ind2sub(s, centroids); % Transfer linear index to subscript
 imgx = y;
 imgy = x;
-imgy = s(2)-imgy; % What is mean? invert the image 
+%imgy = s(2)-imgy; % What is mean? invert the image 
 

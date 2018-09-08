@@ -2,7 +2,7 @@
 '''Script to represent worm track and statistics
 |Version | Author | Commit
 |0.1     | ZhouXY | first runable version
-|0.2     | H.F.   | 
+|0.2.0     | H.F.   | don't show the image but only save image
 '''
 
 import os,sys
@@ -35,7 +35,7 @@ def getindivilocations(locations):
 
 # Plot the track image from([x], [y], frame rate)
 # To Do: add distribution aside image
-def PointPlot(location):
+def PointPlot(location, path):
     x = location[0]
     y = location[1]
     fig,ax = plt.subplots()
@@ -47,7 +47,7 @@ def PointPlot(location):
         y[i]=[float(i) for i in y[i]]
         ax.plot(x[i],y[i],'ro',MarkerSize = 1)
         ax.set_title("Frame_"+str(i))
-        plt.savefig("%i.png"%i) # save the image to folder
+        plt.savefig("%s/%i.png"%(path,i),dpi=300) # save the image to folder
 
 def ExtractValidPoint(Pointdynamics):
     dis = 0
@@ -95,11 +95,12 @@ def LocationDenminationChange(Points): # for plot multpoints
     return [x,y]
 
 if __name__ == "__main__":
+    result_path = "/home/hf/iGEM/Results/20180904"
     locations = read_go("/home/hf/iGEM/Results/20180904/result.txt")
     locations = changeformat(locations)
 
     Pointdynamics = getindivilocations(locations)
-    PointPlot(LocationDenminationChange(Pointdynamics))
+    PointPlot(LocationDenminationChange(Pointdynamics), "%s/PointImage"%result_path)
 
     #print("points",len(Pointdynamics))
     ValidPoints = ExtractValidPoint(Pointdynamics)
@@ -109,7 +110,7 @@ if __name__ == "__main__":
 
     ContinuesPoints = ExtractContinuesPoint(ValidPoints)
     print("Continues",len(ContinuesPoints))
-    PointPlot(LocationDenminationChange(ValidPoints))
-    PointPlot(LocationDenminationChange(ContinuesPoints))
+    #PointPlot(LocationDenminationChange(ValidPoints))
+    #PointPlot(LocationDenminationChange(ContinuesPoints))
     #PointPlot(point1)
     #PointSubPlot(LocationDenminationChange(ValidPoints))

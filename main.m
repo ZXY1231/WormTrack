@@ -67,6 +67,7 @@ end
 
 % Write each worm's localtion to file
 flocates = fopen([result_path 'DiffussionTest7min.localtion'],'w');
+csvwrite([result_path 'DiffussionTest7min.local'],cell2mat(PointsDynamics'));
 for i = 1:length(PointsDynamics)
     fprintf(flocates, 'Point %d', i);
     fprintf(flocates, '\r\nx\r\n');

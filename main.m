@@ -4,19 +4,19 @@
 % | 0.1     | ZhouXY | 18.07.19 | The init version
 % | 0.2     | H.F.   | 18.08.28 | 
 % TODO: put the parameters outside function but main function
-
+% å?¯å?‘å¼?è¿½è¸ª
 clear all;
 warning('off','all'); % Close all warning
 
 tic;
 % Parameters
-soure_path = '/home/hf/iGEM/Results/20180904/DifussionTest7min/';
+source_path = '/home/hf/iGEM/Results/20180904/DifussionTest7min/';
 result_path ='/home/hf/iGEM/Results/20180904/';
 thresh = 0.991;
 small = 50;
 big = 600;
 
-imges = dir([soure_path '*.tif']);
+imges = dir([source_path '*.tif']);
 imge_num = length(imges);
 CentroidsLocates = cell(imge_num,1);
 leng = imge_num;

@@ -73,5 +73,5 @@ if __name__ == "__main__":
     print("validpoints: %i"%(ValidPoints.shape[1]//2)) 
     #PointPlot(ValidPoints, "%s/ValidPoint"%result_path, 2)
     ContinuedPoints = ExtractContinuesPoint(ValidPoints)
-    np.savetxt("%s/continued.local"%result_path,ContinuedPoints,delimiter='\t')
-    #PointPlot(ContinuedPoints, "%s/ContinuedPoints"%result_path, 2)
+    #np.savetxt("%s/continued.local"%result_path,ContinuedPoints,delimiter='\t')
+    PointPlot(ContinuedPoints, "%s/ContinuedPoints"%result_path, 2)

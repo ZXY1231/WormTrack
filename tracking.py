@@ -1,58 +1,46 @@
 #/bin/python3
-import os
-import matplotlib.pyplot as plt
+
+import numpy as np
 import cv2 as cv
+from matplotlib import pyplot as plt
+import os
 import sys
 import argparse
 
-"""
-Just track, don't classify
 
-| Version | Comment
-|   0.1   | Unfinish
-
-"""
-
-
-# Pass through all parameters
+## Pass through all parameters
 parser = argparse.ArgumentParser()
 parser.add_argument('path', type=str)
 parser.add_argument('output', type=str)
+#parser.add_argument('name', type=str)
 args = parser.parse_args()
 img_dirs = args.path
 out_dirs = args.output
+#name = args.name
 
 files = os.listdir(img_dirs)
 files.sort()
 
+## Constant number
+fps = 0.6
+
 # Local the neurons
-pos = []
-#pos.append((876, 759, 887, 772))
-pos.append((876, 759, 887, 772))
-pos.append((892, 763, 910, 776))
-bg = (889, 679, 911,701)
-
-fluo_0 = np.zeros([len(files), len(pos)]) # raw fluorescnece
-fluo_a = np.zeros([len(files), len(pos)]) # autofluorescence
-
 # extra fluorescence
 frame = 0
-fluo_t = np.zeros(len(pos))
-fluo_a_t = np.zeros(len(pos))
+
 for img_name in files:
     img = cv.imread(img_dirs+'/'+img_name, 2)
-    img_bg = img[bg[0]:bg[2], bg[1]:bg[3]]
-    for neuron in range(len(pos)):
-        h_0 = pos[neuron][0]
-        v_0 = pos[neuron][1]
-        h_1 = pos[neuron][2]
-        v_1 = pos[neuron][3]
-        fluo_t[neuron] = np.mean(img[v_0:v_1, h_0:h_1])
-        fluo_a_t = np.mean(img_bg)
-    fluo_0[frame] = fluo_t
-    fluo_a[frame] = fluo_a_t
+    x_max = (img.shape)[0]
+    y_max = (img.shape)[1]
+    img = img[int(1/3*x_max): int(2/3*x_max), int(1/3*y_max):int(2/3*y_max)]
+    #edges = cv.Canny(img, 100, 200)
+    #img = cv.GaussianBlur(img,(5,5), 4)
+    plt.subplot(121), plt.imshow(img)
+    plt.title('Orignal Image')
+    #plt.subplot(122), plt.imshow(edges)
+    #plt.title('Edge Image')
+    #plt.show()
     #cv.rectangle(img, (v_0,h_0), (v_1, h_1))
-    #jcv.imshow(img)
-    #cv.show()
-    #cv.imwrite(img, )
+    #plt.savefig(out_dirs + '/'+ img_name +'.png', dpi=300)
+    cv.imwrite(out_dirs + '/'+ img_name +'.tif', img)
     frame = frame + 1

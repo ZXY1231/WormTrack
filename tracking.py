@@ -1,5 +1,7 @@
 #/bin/python3
 
+# 20190208
+
 import numpy as np
 import cv2 as cv
 from matplotlib import pyplot as plt
@@ -7,63 +9,102 @@ import os
 import sys
 import argparse
 
-
 ## Pass through all parameters
 parser = argparse.ArgumentParser()
 parser.add_argument('path', type=str)
 parser.add_argument('output', type=str)
-#parser.add_argument('name', type=str)
 args = parser.parse_args()
 img_dirs = args.path
 out_dirs = args.output
-#name = args.name
-
 files = os.listdir(img_dirs)
 files.sort()
 
-## Constant number
+## Constant parameters
 fps = 0.6
 
-# Local the neurons
+# choose worm 
+img_first = cv.imread(img_dirs+'/'+files[0], -1)
+worm_first = cv.selectROI(img_first, False)
+cv.rectangle(img_first, (worm_first[0], worm_first[1]),
+    (worm_first[0]+worm_first[2], worm_first[1]+worm_first[3]),
+    (0, 0, 0), 2 , 1)
+cv.imwrite(out_dirs + '/'+ files[0] +'choose_roi.tif', first_frame);
 
-# extra fluorescence
-frame = 0
-# inital tracker
-tracker = cv.TrackerMIL_create()
-#tracker = cv.TrackerBoosting_create()
-first_frame = cv.imread(img_dirs+'/'+files[0], -1)
-ret,first_frame = cv.threshold(first_frame, 18000,40000,cv.THRESH_TOZERO)
-bbox = cv.selectROI(first_frame, False)
-ok = tracker.init(first_frame, bbox)
+worms_t = '' # worm_t time series: (t, x_0, y_0, img_wormbody)
+
+## find the connected edge to represente worm edge
+def edgeScanner(img_src):
+    img_binary = cv.threshold(img_src,1, 1, cv.THRESH_BINARY)
+    element = cv.getStructuringElement(cv.MORPH_RECT,(3,3))
+    edge = img_binary - cv.erode(img_binary, element)
+    edge_point = np.where(edge == 1)
+    return edge_point
+    #TODO: error handle and connectivity proof
 
 for img_name in files:
-    img = cv.imread(img_dirs+'/'+img_name, -1)
-    x_max = (img.shape)[0]
-    y_max = (img.shape)[1]
-    #img = ((img-10000)/117).astype('uint8')
-    #img = img[int(1/3*x_max): int(2/3*x_max), int(1/3*y_max):int(2/3*y_max)]
-    #edges = cv.Canny(img, 28, 143)
-    #binary1 = cv.GaussianBlur(img, (3,3), 0);
-    #binary2 = cv.GaussianBlur(img, (31,31), 0);
-    #binary2 = cv.GaussianBlur(img, (11,11), 0);
-    #plt.subplot(121), plt.imshow(img)
-    #plt.title('Orignal Image')
-    #plt.subplot(122), plt.imshow(binary1 - binary2)#binary1)
-    #plt.subplot(122), plt.imshow(edges)
-    #plt.title('Edge Image')
-    #plt.show()
-    #cv.rectangle(img, (v_0,h_0), (v_1, h_1))
-    #plt.savefig(out_dirs + '/'+ img_name +'.png', dpi=300)
-    ret,img = cv.threshold(img,18000,40000,cv.THRESH_TOZERO)
-    ok, bbox = tracker.update(img)
+    # from previous frame
+    img_worm_p = worms_t[3]
+    x_ori = worms_t[1]
+    y_ori = worms_t[2]
+    pos_wormbody = np.where( img_worm_p > 0) 
+    pos_wormbody = list(zip(pos_wormbody[1] + x_ori, pos_wormbody[0] + y_ori))
+    pos_wormedge = edgeScanner(img_worm_p)
+    pos_wormedge = list(zip(pos_wormedge[1] + x_ori, pos_wormedge[0] + y_ori))
 
-    if ok:
-        p1 = (int(bbox[0]), int(bbox[1]))
-        p2 = (int(bbox[0] + bbox[2]), int(bbox[1] + bbox[3]))
-        cv.rectangle( img, p1, p2, (255, 255, 255), 2 , 1)
+    img_new = cv.imread(img_dirs+'/'+img_name, -1)
+
+    ret,img_thre = cv.threshold(img_roi, 15000, 40000, cv.THRESH_TOZERO)
+
+    pos_wormedge_new = pos_wormedge
+    pos_wormbody_new = pos_wormbody
+    while(True):
+        for point in pos_wormedge:
+            neighbour_set = [(point[0], point[1]+1), (point[0], point[1]-1), 
+                (point[0]-1, point[1]), (point[0]+1, point[1])]
+            if img_new[point]: # edge poin still inside worm body 
+                for neighbour in neighbour_set:
+                    if (not(neighbour in pos_wormbody)) and
+                        (neighbour in pos_wormedge) and
+                        img_new(neighbour): # extend edge when it is light
+                        pos_wormbody_new.appoend(neighbour)
+                        pos_wormedge_new.remove(neighbour)
+                        pos_wormedge_new.append(neighbour)
+                        break
+            else: # edge point already moved from wormbody
+                for neighbour in neighbour_set:
+                    if (not(neighbour in pos_wormedge)) and
+                        (neighbour in pos_wormbody) # erode edge when it is dark
+                        pos_wormbody_new.remove(point)
+                        pos_wormedge_new.remove(point)
+                        pos_wormedge_new.append(neighbour)
+                        break
+        if(pos_wormedge == pos_wormedge_new):
+            break # until worm's edge is fixed
+        pos_wormedge = pos_wormedge_new
+        pos_wormbody = pos_wormbody_new
+    minx, maxx = pos_wormedge[0][0]
+    miny, maxy = pos_wormedge[0][1]
+    for i in pos_wormedge:
+        if minx > i[0]:
+            minx = i[0]
+        if miny > i[1]:
+            miny = i[1]
+        if maxx < i[0]:
+            maxx = i[0]
+        if maxy < i[1]:
+            maxy = i[1]
+                        
+
+    #TODO: pos to image
+    if (maxx-minx > 0) and (maxy-miny > 0):
+        p1 = (minx, miny)
+        p2 = (maxx, maxy)
+        cv.rectangle( img, p1, p2, (65536, 65536, 65536), 1 ,cv.LINE_4)
     else :
         cv.putText(img, "Tracking fail", (100,80,), cv.FONT_HERSHEY_SIMPLEX, 0.75,(0,0,255),2)
     
-    cv.imwrite(out_dirs + '/'+ img_name +'boosting.tif', img);#binary2-binary1)
+    worm_t.append((time, minx, miny, img_wormbody))
+    cv.imwrite(out_dirs + '/'+ img_name +'.tif', img);
+
     frame = frame + 1
-    print("Frame: ", frame)
+    print("Frame: ")

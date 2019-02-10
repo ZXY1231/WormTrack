@@ -1,6 +1,6 @@
 #/bin/python3
 
-# 20190209
+# 20190210
 
 import numpy as np
 import cv2 as cv
@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 import os
 import sys
 import argparse
+import csv
 
 ## Pass through all parameters
 parser = argparse.ArgumentParser()
@@ -19,6 +20,7 @@ out_dirs = args.output
 files = os.listdir(img_dirs)
 files.sort()
 np.set_printoptions(linewidth=np.inf)
+
 
 ## Constant parameters
 fps = 0.6
@@ -59,6 +61,13 @@ worm_t = '' # worm_t time series: (t, y_0, x_0, img_wormbody)
 worm_t = [(0, y_mid-l-1, x_mid-l-1, img_wormbody)]
 worms_t[0] = worm_t
 
+header = ['worm', 'time', 'y_0', 'x_0', 'img_wrombody']
+rows = [0, 0, y_mid-l-1, x_mid-l-1, files[0]]
+csvfile =  open(out_dirs+'.csv', 'w')
+spamwriter = csv.writer(csvfile, delimiter=' ', quoting=csv.QUOTE_MINIMAL)
+spamwriter.writerow(header)
+spamwriter.writerow(rows)
+
 ## find the connected edge to represente worm edge
 counter = 1
 worm = 0
@@ -78,6 +87,12 @@ for img_name in files:
     img_new_roi = img_new[y_ori : y_ori+img_wormbody.shape[1]+1,
         x_ori : x_ori+img_wormbody.shape[0]+1]
     ret, img_new_roi_th= cv.threshold(img_new_roi, 16000, 40000, cv.THRESH_TOZERO)
+    pos_wormbody = np.where( img_new_roi_th > 0) 
+    pos_wormbody = list(zip(pos_wormbody[0] + y_ori, pos_wormbody[1] + x_ori))
+    pos_wormedge = edgeScanner(img_new_roi_th)
+    pos_wormedge = list(zip(pos_wormedge[0] + y_ori, pos_wormedge[1] + x_ori))
+
+    '''
     pos_wormedge_new = pos_wormedge
     pos_wormbody_new = pos_wormbody # It is necessary to regenerate position
     while(True): # Extend and erode edge step by step
@@ -110,6 +125,7 @@ for img_name in files:
             break # until worm's edge is fixed
         pos_wormedge = pos_wormedge_new
         pos_wormbody = pos_wormbody_new
+    '''
     minx, maxx = pos_wormedge[0]
     miny, maxy = pos_wormedge[0]
     for i in pos_wormedge:
@@ -152,7 +168,11 @@ for img_name in files:
             0.75,(0,0,255),2)
     worm_t.append((counter, y_mid-l-1, x_mid-l-1, img_wormbody))
     worms_t[worm] = worm_t
+    rows = [0, counter, y_mid-l-1, x_mid-l-1, img_name]
+    spamwriter.writerow(rows)
     cv.imwrite(out_dirs + '/'+ img_name +'.tif', img_new)
 
     counter = counter  + 1
     print("Frame: ", counter)
+
+csvfile.close()

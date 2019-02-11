@@ -1,6 +1,6 @@
 #/bin/python3
 
-# 20190210
+# 20190211
 
 import numpy as np
 import cv2 as cv
@@ -25,6 +25,18 @@ np.set_printoptions(linewidth=np.inf)
 fps = 0.6
 window = 35
 
+def extendBody(img_wormbody_old_l, img_new_roi_th_l):
+    A = cv.threshold(img_new_roi_th_l, )
+    element = cv.getStructuringElement(cv.MORPH_RECT,(3,3))
+    X1 = (cv.threshold(img_wormbody_old_l, 1, 1, cv.THRESH_BINARY)[1]
+          * img_new_roi_th_l)
+    X0 = np.zeros(X1.shape, dtype=np.uint16)
+    while(sum(sum( X0 == X1))):
+        X0 = X1
+        X1 = cv.bitwise_and(cv.dilate(X0, element), A)
+    img_wormbody_new_l = X1
+    return img_wormbody_new_l
+
 def edgeScanner(img_src):
     #ret, img_binary = cv.threshold(img_src,1, 1, cv.THRESH_BINARY)
     ret, img_binary = cv.threshold(img_src,50000, 1, cv.THRESH_BINARY)
@@ -45,17 +57,18 @@ img_first_roi_th = (cv.GaussianBlur(img_first_roi, (31,31), 0)
 
 y_ori = worm_first[1]
 x_ori = worm_first[0]
-pos_wormbody = np.where( img_first_roi_th > 50000) 
+pos_wormbody = np.where( img_first_roi_th > 30000)
+x_mid = int((max(pos_wormbody[1]) + min(pos_wormbody[1]))/2 + x_ori)
+y_mid = int((max(pos_wormbody[0]) + min(pos_wormbody[0]))/2 + y_ori)
 pos_wormbody = list(zip(pos_wormbody[0] + y_ori, pos_wormbody[1] + x_ori))
 pos_wormedge = edgeScanner(img_first_roi_th)
-x_mid = int((max(pos_wormedge[1]) + min(pos_wormedge[1]))/2) + x_ori
-y_mid = int((max(pos_wormedge[0]) + min(pos_wormedge[0]))/2) + y_ori
 l = int(window/2)
 pos_wormedge = list(zip(pos_wormedge[0] + y_ori, pos_wormedge[1] + x_ori))
+
 img_wormbody = img_first[y_mid-l:y_mid+l+1, x_mid-l:x_mid+l+1]
-body = np.zeros(img_wormbody.shape)
+body = np.zeros(img_wormbody.shape, dtype=np.uint16)
 for i in pos_wormbody:
-    body[i[0]-y_mid+1, i[1]-x_mid+1] = 1
+    body[i[0]-y_mid+l, i[1]-x_mid+l] = 1
 img_wormbody = img_wormbody * body
 
 cv.rectangle(img_first, (worm_first[0], worm_first[1]),
@@ -159,7 +172,7 @@ for img_name in files:
         #element = cv.getStructuringElement(cv.MORPH_RECT,(3,3))
         #edge = img_wormbody_binary[1] - cv.erode(img_wormbody_binary[1], element)
         #edge = 1 - edge
-        body = np.zeros(img_wormbody.shape)
+        body = np.zeros(img_wormbody.shape, dtype=np.uint16)
         for i in pos_wormbody:
             body[i[0]-y_ori, i[1]-x_ori] = 1 
         x_mid = int((maxx+minx)/2)

@@ -15,7 +15,7 @@ imgremovesmall = bwareaopen(img_thresh,small);   %remove regions <100 pixels
 img_removed = RemoveBigArea(imgremovesmall,big);%remove regions >600 pixels
 
 % Find connected components in binary image
-CC = bwconncomp(img_removed,26); %default is 8,18, 26 neighborhood also OK
+CC = bwconncomp(img_removed,26); % should use 8 connected for 2d image
 
 % Due to cellfun limit, size of img must be a cell form
 s = size(img_removed);

@@ -65,12 +65,12 @@ def toggle_selector(event):
         h = abs(y2-y1)
         roi = mpatch.Rectangle((x1,y1), w, h, fill=False)
         current_ax.add_patch(roi)
-        rois[label] = (x1, y1, w, h)
+        rois[label] = (x1, y1, x2, y2)
         current_ax.annotate(label, (x1,y1), fontsize=6)
         cv.rectangle(img_out, (x1, y1), (x2, y2), (65536, 65536, 65536), 1)
         cv.putText(img_out, '%d'%label, (x1, y1), cv.FONT_HERSHEY_SIMPLEX,0.7,
                 white, 1, cv.LINE_AA)
-        rois_file.write("%d\t%s\t%s\t%s\t%s\n"%(label, x1, y1, w, h))
+        rois_file.write("%d\t%s\t%s\t%s\t%s\n"%(label, x1, y1, x2, y2))
         label += 1 # update label
         print('Select worm:', label)
     if event.key in ['d', 'D']:

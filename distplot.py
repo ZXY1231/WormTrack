@@ -9,15 +9,17 @@ import argparse
 # Pass through all parameters
 parser = argparse.ArgumentParser()
 parser.add_argument('pos_file', type=str)
-parser.add_argument('output_dirs', type=str)
+parser.add_argument('out_dirs', type=str)
 args = parser.parse_args()
 pos_file = args.pos_file
-out_dirs = args.output_dirs
+out_dirs = args.out_dirs
 
 # load experiment data
 pos_dat = np.loadtxt(pos_file,delimiter=',', skiprows=1)
-x = pos_dat[:,2]
-y = pos_dat[:,3]
+scale = 12.5/3510
+shift = 3510/2
+x = (pos_dat[:,2]-shift)*scale
+y = (pos_dat[:,3]-shift)*scale
 
 # Fixing random state for reproducibility
 #np.random.seed(19680801)
@@ -51,12 +53,15 @@ axHisty.yaxis.set_major_formatter(nullfmt)
 axScatter.scatter(x, y)
 
 # now determine nice limits by hand:
-binwidth = 0.25
+binwidth = 0.5
 xymax = max(np.max(np.abs(x)), np.max(np.abs(y)))
-lim = (int(xymax/binwidth) + 1) * binwidth
+#lim = (int(xymax/binwidth) + 1) * binwidth
+lim = 6.5 # 6cm
 
 axScatter.set_xlim((-lim, lim))
 axScatter.set_ylim((-lim, lim))
+
+plt.title('Ethanol Training Result of 130 Worm', y=-0.1, x=-1.8)
 
 bins = np.arange(-lim, lim + binwidth, binwidth)
 axHistx.hist(x, bins=bins)
@@ -64,7 +69,5 @@ axHisty.hist(y, bins=bins, orientation='horizontal')
 
 axHistx.set_xlim(axScatter.get_xlim())
 axHisty.set_ylim(axScatter.get_ylim())
-
-plt.save(output_dirs + os.path.basename(pos_file) + '.png', dpi=300)
-#plt.show()
+plt.savefig(out_dirs + os.path.basename(pos_file) + '.png', dpi=200)
 

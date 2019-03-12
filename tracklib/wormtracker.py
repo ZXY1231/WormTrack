@@ -195,6 +195,7 @@ class WorkTracker:
     # Initialize the seed from bounding boxa
     def tracker_init(self, img0):
         #img0 = self.ori_imgs.get(0)[0] # Read as origal format
+        img0 = cv.imread(img0, -1)
         img0_roi = img0[self.y1:self.y2+1, self.x1:self.x2+1]
         img0_roi_th = (cv.GaussianBlur(img0_roi, (31,31), 0)
                         - cv.GaussianBlur(img0_roi, (3,3), 0))
@@ -290,8 +291,10 @@ class WorkTracker:
             #img_new = self.ori_imgs[counter][0]
             #img_new = ori_imgs[counter][0]
             #img_name = self.ori_imgs[counter][1]
+            #img_name = ori_imgs[counter][1]
             img_name = ori_imgs[counter][1]
-            img_new_roi = ori_imgs[counter][0][y_ori : y_ori+self.window,
+            img_new = cv.imread(ori_imgs[counter][0],-1)
+            img_new_roi = img_new[y_ori : y_ori+self.window,
                     x_ori : x_ori+self.window]
             img_wormbody = self.extendBody(img_new_roi,img_wormbody_old,counter)
             
@@ -308,12 +311,12 @@ class WorkTracker:
                     + x_ori))
                 for i in pos_wormbody:
                     img_wormbody_mask[i[0]-y_ori_new, i[1]-x_ori_new] = 1
-                img_wormbody = img_wormbody_mask * ori_imgs[counter][0][ \
+                img_wormbody = img_wormbody_mask * img_new[ \
                         y_ori_new : y_mid+l+1, x_ori_new : x_mid+l+1]
                 img_wormbody = img_wormbody * self.evalBody(img_wormbody,
-                        counter, ori_imgs[counter][0], y_ori_new, x_ori_new)
+                        counter, img_new, y_ori_new, x_ori_new)
                 # TODO: error handle
-                img_prev = ori_imgs[counter][0][y_mid-50 : y_mid+50, 
+                img_prev = img_new[y_mid-50 : y_mid+50, 
                         x_mid-50 : x_mid+50].copy()
                 #img_prev = ori_imgs[counter][0][].copy()
                 p1 = (y_ori-y_mid+50, x_ori+50-x_mid)

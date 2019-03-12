@@ -9,6 +9,11 @@ import cv2 as cv
 import time
 from tracklib.wormtracker import WorkTracker as wt
 
+'''
+|version | Commit
+| 0.1    | work
+| 0.2    | use tmps
+'''
 output = mp.Queue()
 
 parser = argparse.ArgumentParser()
@@ -34,7 +39,7 @@ def load_data(img_dirs):
     files.reverse()
     key = 0
     for img_name in files:
-        ori_imgs[key]= (cv.imread(img_dirs+'/'+ img_name, -1), img_name)
+        ori_imgs[key]= ( img_dirs+'/'+img_name, img_name)
         key += 1
 
 # Initialize roi 
@@ -60,16 +65,31 @@ def tracker_create(is_auto, ori_imgs_l, out_dirs_l, timestamp_l):
             worm[roi_key] = wt(roi_key, x1, y1, x2, y2, out_dir)
 
 # 
-def tracker_tracking(worm_key, output):
+def tracker_tracking(worm_key): #, output):
+    #print(worm_key)
     worm[worm_key].tracker_init(ori_imgs[0][0])
     result = worm[worm_key].tracking(ori_imgs)
-    output.put(result)
+    #output.put(result)
 
+def test(i):
+    i = 0
+    while i< 3*10**9:
+        i += 1
+    print(i)
 
 load_data(img_dirs)
 tracker_create(is_auto, ori_imgs, out_dirs, timestamp)
 # load in to process
-processes = [mp.Process(target=tracker_tracking, args=(key, output)) 
+#pool = mp.Pool(os.cpu_count())
+#for key in worm.keys():
+    #pool.apply_async(tracker_tracking, args=(key,))
+#    pool.apply_async(test, args=(key,))
+
+#print("Done")
+#pool.close()
+#pool.join()
+#processes = [mp.Process(target=tracker_tracking, args=(key, output)) 
+processes = [mp.Process(target=tracker_tracking, args=(key,)) 
         for key in worm.keys()]
 
 for p in processes:
@@ -78,7 +98,7 @@ for p in processes:
 #for p in processes:
 #    p.join()
 
-results = [output.get() for p in processes]
+#results = [output.get() for p in worm.keys()]
 
 print("Result")
 #print(results)

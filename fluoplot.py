@@ -85,8 +85,9 @@ plt.xlabel(r'\textbf{Time} (s)')
 plt.ylabel(r'\textit{$\Delta I_t//I_0$}')
 plt.ylim(-1.5, 3)
 plt.xlim(0, 120)
-for stimuate in range(3):
-    sti0 = stimuate*35 + sti_begin
+# stimulate bar 
+for stimulate in range(3):
+    sti0 = stimulate*35 + sti_begin
     plt.fill_between(np.linspace(sti0, sti0+5), 3,-1.5, color='k', alpha=0.2)
     plt.text(sti0-4, 2.5, 'Diacetyl')
 plt.legend()

@@ -17,12 +17,30 @@ using namespace cv;
  * ***************************************************************************/
 vector<String> filenames;
 
+// Structure to store, id, pos_x, pos_y, wormbody, 
+struct wormbody {
+    int x = -1;
+    int y = -1;
+    Mat body;
+    unsigned int worm_key;
+    unsigned int worm_frame;
+};
+
+
+vector<wormbody *> worm_t;
+vector<vector<wormbody> *> worms;
+
+void tracker_init(Mat img0, *vector<vector<wormbody>*> worms_l){
+       
+}
+
 
 int main(int argc, char *argv[]){
     string imgs_dirs = "";
     string out_dirs = "";
     bool is_auto = false;
-    
+   
+    // Accept arguments
     if (argc < 3){
         help();
     }else{
@@ -35,20 +53,28 @@ int main(int argc, char *argv[]){
     
     // Fetch all images
     // error event handle: file type detetion
-    glob(imgs_dirs, filenames);    
+    glob(imgs_dirs, filenames);
+    int imgs_num = filenames.size();
+    int worm_num = 0; // inite to zero
     
-    // initial start position by auto or manual
+    // Initial start position by auto or manual
+    Mat img0 = imread( filenames[imgs_num -1], -1);
+        
 
     #pragma omp parallel for
-    for (int i = 0; i < filenames.size(); ++i)
+    for (int i = 0; i < imgs_num; ++i)
     {
         cout << i <<endl;
         Mat whole_img = imread( filenames[i], -1);
         //#pragma omp parallel for
+        // For each worm do track
+        for (int worm = 0; worm < worm_num; ++worm)
+        {
+            
+        }
 
     }
     
-    cout << endl;
     return 0;
 }
 

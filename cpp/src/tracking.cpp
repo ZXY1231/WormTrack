@@ -4,6 +4,7 @@
 #include <opencv2/core.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/tracking.hpp>
 #include "main.h"
 
 using namespace std;
@@ -30,15 +31,22 @@ struct wormbody {
 vector<wormbody *> worm_t;
 vector<vector<wormbody> *> worms;
 
-void tracker_init(Mat img0, *vector<vector<wormbody>*> worms_l){
-       
+void tracker_init(Mat img0, vector<vector<wormbody>*> *worms_l, string AUTO){
+    
+    if (AUTO.length() > 0){ // AUTO model: load initial position from outside list
+
+    }else{ // select one worm by hand
+        Rect2d r = selectROI(img0);
+        cout << r.x <<" " << r.y <<" "<< r.width <<" "<< r.height  << endl;
+    }
+     
 }
 
 
 int main(int argc, char *argv[]){
     string imgs_dirs = "";
     string out_dirs = "";
-    bool is_auto = false;
+    string is_auto = "";
    
     // Accept arguments
     if (argc < 3){
@@ -46,9 +54,10 @@ int main(int argc, char *argv[]){
     }else{
         imgs_dirs = argv[1];
         out_dirs = argv[2];
-        if (argc == 4){
-            is_auto = true;
-        } // If more than 4 argument, just ignore it
+        if (argc > 3){
+            is_auto = argv[3];
+        }
+        // Only accept front 3 arguments
     }
     
     // Fetch all images
@@ -58,9 +67,10 @@ int main(int argc, char *argv[]){
     int worm_num = 0; // inite to zero
     
     // Initial start position by auto or manual
-    Mat img0 = imread( filenames[imgs_num -1], -1);
+    Mat img0 = imread(filenames[0], -1);
+    cout << is_auto << endl;
+    tracker_init(img0, &worms, is_auto);
         
-
     #pragma omp parallel for
     for (int i = 0; i < imgs_num; ++i)
     {

@@ -2,12 +2,6 @@
 #include <iostream>
 #include <fstream>
 #include <string>
-/*
-#include <opencv2/core.hpp>
-#include <opencv2/imgcodecs.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/tracking.hpp>
-*/
 #include "main.h"
 
 using namespace std;
@@ -16,20 +10,20 @@ using namespace std;
  * Des: Track worm
  * | Version | Commit
  * | 0.1     | From python to C++ with OpenMP @ H.F. 20190404
- *
+ * | 0.1-a   | Write single worm version
  * ***************************************************************************/
-vector<String> filenames;
+vector<String> filenames;  // Vector for image filename
 
-// Structure to store, id, pos_x, pos_y, wormbody, 
+// Structure to store indiviual worm' id, pos_x, pos_y, wormbody, time_frame
 struct wormbody {
+    unsigned int worm_label;
     int x = -1;
     int y = -1;
     Mat body;
-    unsigned int worm_label;
     unsigned int worm_frame;
 };
 
-// Seed's information
+// Structure of Seed's information
 struct seed {
     unsigned int label;
     int x0;
@@ -38,7 +32,9 @@ struct seed {
     int h;
 };
 
+// All worms
 vector<vector<wormbody *> *> worms;
+// Vector for all worms seeds
 vector<seed *> seeds;
 unsigned int worm_num = 0;
 unsigned int frame_num = 0;
@@ -131,6 +127,7 @@ int main(int argc, char *argv[]){
     // Accept arguments
     if (argc < 3){
         help();
+        return 0;
     }else{
         imgs_dirs = argv[1];
         out_dirs = argv[2];
@@ -141,17 +138,22 @@ int main(int argc, char *argv[]){
     }
     
     // Fetch all images
-    // error event handle: file type detetion
     glob(imgs_dirs, filenames);
     int imgs_num = filenames.size();
+    // error event handle: file type detetion
+    if (imgs_num < 1){
+        cout << "Fail to read image in: ";
+        cout << imgs_dirs << endl;
+        return 0;
+    }
     int worm_num = 0; // inite to zero
     
     // Initial start position by auto or manual
     Mat img0 = imread(filenames[0], -1);
     cout << is_auto << endl;
     tracker_init(img0, is_auto);
-        
-    #pragma omp parallel for
+    
+    //#pragma omp parallel for
     for (int i = 0; i < imgs_num; ++i)
     {
         cout << i <<endl;
@@ -171,12 +173,13 @@ int main(int argc, char *argv[]){
 void help(){
     cout << "Usage: tracking <images_source_dir> <result_dir> <operation>" << endl;
     cout << "operations:" << endl;
-    cout << "\ttracking {-h --help}" << endl;
-    cout << "\ttracking {-a --auto}" << endl;
+    cout << "\twormtracker {-h --help}" << endl;
+    cout << "\twormtracker {-a --auto}" << endl;
     cout << "\tMore than 3 arguments would be ignored" <<endl;
 }
 
 // Recenter wormbody in image, then return image
+/*
 void tracker_update(Mat whole_img, Mat body_new, unsigned int x_ori_old,
         unsigned int y_ori_old, unsigned int x_ori_new, unsigned y_ori_new)
 {
@@ -210,4 +213,4 @@ void tracker_update(Mat whole_img, Mat body_new, unsigned int x_ori_old,
     }
     Mat worm_body_mask = Mat.zeros(Size(window, window), CV_16U);
     body_new 
-}
+}*/

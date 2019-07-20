@@ -1,0 +1,3 @@
+/igem/Results/20190706/cpp/CMakeFiles/rebuild_cache.dir
+/igem/Results/20190706/cpp/CMakeFiles/wormtracker.dir
+/igem/Results/20190706/cpp/CMakeFiles/edit_cache.dir

@@ -3,6 +3,14 @@
 using namespace cv;
 using namespace std;
 
+/******************************************************************************
+ * Optimize Image Acess Speed
+ * | Version | Commit
+ * |   0.1   | H.F 20190706
+ *
+ * Idea: Is it possible to access camera to anlysis data in real time 
+ ******************************************************************************/
+
 int main(int argc, char** argv )
 {
 

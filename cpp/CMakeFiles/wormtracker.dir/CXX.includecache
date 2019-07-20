@@ -1,0 +1,30 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/igem/Results/20190706/cpp/src/main.h
+opencv2/core.hpp
+-
+opencv2/imgcodecs.hpp
+-
+opencv2/highgui.hpp
+-
+opencv2/tracking.hpp
+-
+
+/igem/Results/20190706/cpp/src/tracking.cpp
+omp.h
+-
+iostream
+-
+fstream
+-
+string
+-
+main.h
+/igem/Results/20190706/cpp/src/main.h
+

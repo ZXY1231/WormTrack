@@ -1,15 +1,17 @@
 %-------------------------------------------------------------------------%
 % Description: Main function to extra features from worm image
-% | Version | Author | Date     | Commit 
+% | Version | Author | Date     | Commit
 % | 0.1     | ZhouXY | 18.07.19 | The init version
+% | 0.2     | H.F.   | 18.08.24 | Beatufy data flow
 
-%path = '/home/hf/iGEM/Results/20180709/130Worm-First30min/';
-path = '\\10.20.13.222\igem\Results\20180709\130Worm-First30min\';
+path = '/home/hf/iGEM/Results/20180709/130Worm-First30min/';
+%path = '\\10.20.13.222\igem\Results\20180709\130Worm-First30min\';
 imges = dir([path '*.fit']);
-imge_num = length(imges);cccc
+imge_num = length(imges);
 CentroidsLocates = cell(imge_num,1);
 leng = imge_num;
 %leng = 1;
+
 for i =1:leng
     %[imges(i).folder '\' imges(i).name];
     img = imread([imges(i).folder '/' imges(i).name]);

@@ -1,34 +1,22 @@
 function contrastAdjusted = BgNormal(img)
-%img = imread('/Users/apple/Desktop/IGEM/post/tracking/WormTrack/worm1.bmp');
-%img = img-4000;
-%max(img)
-%min(img)
-%function 
+% Backgroud Normalize
+% | Version | Author | Date     | Commit
+% | 0.1     | ZhouXY | 18.07.19 | The init version
+% | 0.2     | H.F.   | 18.09.05 |
+% To Do: using SNR extend instead of imadjust
+
+% Before the calculation, the image can be down dimension to acclation.
 se = offsetstrel('ball',50,50);
 %img = imadjust(img);
-img = padarray(img,[8,8],'symmetric');
-img = wiener2(img,[9,9]);
+%img = padarray(img,[8,8],'symmetric');
+img = wiener2(img,[3,3]);
 
 %imgopening = imtophat(imgwiener,se);
-
+%tic;
 tophatFiltered = imtophat(img,se);
-%figure(1) 
-%imshow(img);
+%contrastAdjusted =tophatFiltered;
+%toc;
 
-%%figure(2)
 %%imshow(tophatFiltered);
-
 contrastAdjusted = imadjust(tophatFiltered);
-figure(3)
-imshow(contrastAdjusted);
-%max(contrastAdjusted)
-%min(contrastAdjusted)
-%imwrite(contrastAdjusted,'worm1_contrastAdjusted.tif')
-
-%BothatFiltered = imbothat(img,se);
-%figure(4)
-%imshow(BothatFiltered);
-
-%figure(5)
-%imshow(imadjust(BothatFiltered));
 
